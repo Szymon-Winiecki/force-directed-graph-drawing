@@ -21,7 +21,14 @@ class ForceDirectedGraph{
 		edgeLength : 70,
 		internodesForceMultiplier : 70,
 		forceMultiplier : 1,
-		forceThreshold: 0.2
+		forceThreshold: 0.5,
+		temperature : (frame) => {
+			let max = Math.min(this.style.width, this.style.height) * 0.01;
+			let finalFrame = 150;
+			frame = Math.min(frame, finalFrame);
+			let progress = frame/finalFrame;
+			return (1 - progress) * max;
+		}
 	}
 
 	time = {
@@ -87,6 +94,8 @@ class ForceDirectedGraph{
 
 		this.options.frametime = 1000/this.options.framerate
 
+		//this.simulation.temperature =
+
 		this.update();
 	}
 
@@ -151,8 +160,10 @@ class ForceDirectedGraph{
 			}));
 	}
 
+	/*
+	//basic method
 	calcForces(){
-		this.edges.forEach((edge, i) => {
+		this.edges.forEach((edge, i) => { //forces from next edges overwriting forces frok previous ones, TODO: fix it
 			let distance = Vector2D.distance(edge[0].position, edge[1].position);
 			edge[1].force = edge[0].position.subtract(edge[1].position).normalize().scale(Math.log(distance/this.simulation.edgeLength) * this.simulation.edgeForceMultiplier);
 			edge[0].force = edge[1].position.subtract(edge[0].position).normalize().scale(Math.log(distance/this.simulation.edgeLength) * this.simulation.edgeForceMultiplier);
@@ -163,17 +174,63 @@ class ForceDirectedGraph{
 				let distance = Vector2D.distance(nodeA.position, nodeB.position);
 				let force = this.simulation.internodesForceMultiplier/(distance*distance);
 				nodeA.force = nodeA.force.add(nodeA.position.subtract(nodeB.position).normalize().scale(force));
-				nodeB.force = nodeB.force.add(nodeB.position.subtract(nodeA.position).normalize().scale(force));
+				nodeB.force = nodeB.force.add(nodeB.position.subtract(nodeA.position).normalize().scale(force)); // forces are calculeted twice (when foreach is in nodeA and when in nodeB), TODO: fix it
+			});
+		});
+	}*/
+
+	calcForces(){
+		let area = this.style.width * this.style.height;
+		let k = Math.sqrt(area / this.nodes.length) * 3;
+		let k2 = k*k;
+
+
+		//repulsive forces between each pair nodes
+		this.nodes.forEach((nodeA, i) => {
+			nodeA.force = new Vector2D(0, 0);
+			this.nodes.forEach((nodeB, j) => {
+				if(nodeA == nodeB) return;
+				let diff = nodeA.position.subtract(nodeB.position);
+				let forceDir = diff.normalize();
+				let forceVal = k2 / diff.magnitude();
+
+				nodeA.force = nodeA.force.add(forceDir.scale(forceVal));
 			});
 		});
 
+		//attractive forces between each pair of neighbours
+		this.edges.forEach((edge, i) => {
+			let diff = edge[0].position.subtract(edge[1].position);
+			let forceDir = diff.normalize();
+			let forceVal = Math.pow(diff.magnitude(), 2) / k;
+
+			edge[0].force = edge[0].force.subtract(forceDir.scale(forceVal));
+			edge[1].force = edge[1].force.add(forceDir.scale(forceVal));
+		});
+
+		//repulsive forces between each node and frame borders AND force clam to temperature
+		this.nodes.forEach((node, i) => {
+			let borderForce = new Vector2D(0, 0);
+			borderForce.x += k2 / node.position.x;
+			borderForce.x -= k2 / (this.style.width - node.position.x);
+			borderForce.y += k2 / node.position.y;
+			borderForce.y -= k2 / (this.style.height - node.position.y);
+			node.force = node.force.add(borderForce);
+
+			node.force = node.force.normalize().scale(Math.min(node.force.magnitude(), this.simulation.temperature(this.time.framesCount)));
+		});
 
 	}
 
 	applyForces(){
+		let margin = this.style.nodeRadius*0.5;
+		let upperleft = new Vector2D(margin, margin);
+		let bottomright = new Vector2D(this.style.width - margin, this.style.height - margin);
+
 		this.nodes.forEach((node, i) => {
 			if(node.force.magnitude() > this.simulation.forceThreshold){
 				node.position = node.position.add(node.force.scale(this.simulation.forceMultiplier));
+				node.position = node.position.clamp(upperleft, bottomright);
 			}
 		});
 
