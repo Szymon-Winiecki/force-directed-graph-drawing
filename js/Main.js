@@ -42,4 +42,20 @@ function start(){
 	};
 	let forceGraph = new ForceDirectedGraph(data, "#graph-container", options);
 	forceGraph.start();
+
+	bindButtons(forceGraph);
+}
+
+function bindButtons(forceGraph){
+	document.querySelector("#resumeButton").onclick = () => {
+		forceGraph.continue();
+	};
+
+	document.querySelector("#pauseButton").onclick = () => {
+		forceGraph.pause();
+	};
+
+	document.querySelector("#resetButton").onclick = () => {
+		forceGraph.continue();
+	};
 }

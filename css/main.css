@@ -1,3 +1,25 @@
+*{
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+html,
+body{
+  min-height: 100%;
+  margin: 0;
+}
+
 svg{
   border: 1px solid black;
+}
+
+
+.controls{
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  box-sizing: border-box;
+  width: 400px;
+  margin: 10px;
 }

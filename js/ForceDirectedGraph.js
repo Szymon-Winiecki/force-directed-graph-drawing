@@ -6,6 +6,8 @@ class ForceDirectedGraph{
 
 	parentSelector;
 
+	paused = false;
+
 	frame = {
 		width : 600,
 		height : 600,
@@ -32,7 +34,7 @@ class ForceDirectedGraph{
 		frametime : 16
 	}
 
-	simulationMethod;
+	simulation;
 
 
 	constructor(data, parentSelector, style){
@@ -52,7 +54,7 @@ class ForceDirectedGraph{
 
 		this.frame.padding = this.style.nodeRadius*0.5 + 4;
 
-		this.simulation = new FruchtermanAndReingoldMethod(this.nodes, this.edges, this.frame);
+		this.simulation = new EadesMethod(this.nodes, this.edges, this.frame);
 	}
 
 	buildNodesArray(){
@@ -92,6 +94,17 @@ class ForceDirectedGraph{
 		this.update();
 	}
 
+	pause(){
+		this.paused = true;
+	}
+
+	continue(){
+		if(this.paused){
+			this.paused = false;
+			this.update();
+		}
+	}
+
 	update(){
 
 		this.simulation.calculateForces();
@@ -108,6 +121,9 @@ class ForceDirectedGraph{
 		this.time.deltaTime = currentTime - this.time.lastFrameTime;
 		this.time.lastFrameTime = currentTime;
 
+		if(this.paused){
+			return;
+		}
 		setTimeout(this.update.bind(this), d3.max([1, this.options.frametime - nzk])); //TODO: change to conditional upate AND protect from < 0 time
 	}
 
@@ -148,6 +164,7 @@ class ForceDirectedGraph{
 			.attr("r", this.style.nodeRadius)
 			.attr("fill", this.style.nodeColor)
 			.call(d3.drag().on('drag', (e, d) => {
+				if(this.paused) return;
 				d.position.x = e.x;
 				d.position.y = e.y;
 			}));
