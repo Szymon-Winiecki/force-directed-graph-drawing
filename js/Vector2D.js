@@ -39,4 +39,12 @@ class Vector2D{
   normalize(){
     return this.scale(1/this.magnitude())
   }
+
+  clamp(upperleft, bottomright){
+    let vec = new Vector2D(0, 0);
+    vec.x = Math.min(Math.max(upperleft.x, this.x), bottomright.x);
+    vec.y = Math.min(Math.max(upperleft.y, this.y), bottomright.y);
+
+    return vec;
+  }
 }

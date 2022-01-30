@@ -36,7 +36,7 @@ function start(){
 			neighbours : [2]
 		},
 	];*/
-	let data = GraphGenerator.randomGraph(40, 0.04);
+	let data = GraphGenerator.randomGraph(5, 1);
 	let options = {
 
 	};
