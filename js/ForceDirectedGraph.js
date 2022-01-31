@@ -39,8 +39,9 @@ class ForceDirectedGraph{
 
 	constructor({data, simulationMethod, simulationParameters, parentSelector, frame, style}){
 		this.data = data;
-		this.nodes = this.buildNodesArray();
-		this.edges = this.buildEdgesArray();
+		this.nodes = GraphTools.graphToNodes(this.data);
+		this.edges = GraphTools.graphToEdges(this.data, this.nodes);
+		this.randomizePositions();
 
 		this.parentSelector = parentSelector;
 
@@ -67,34 +68,6 @@ class ForceDirectedGraph{
 		else{
 			console.log("unknown simulation method: " + simulationMethod);
 		}
-	}
-
-	buildNodesArray(){
-		let nodes = [];
-
-		this.data.forEach((item, i) => {
-			nodes.push({
-				position : this.randomPosition(this.style.nodeRadius * 0.5),
-				force :  new Vector2D(0, 0)
-			});
-		});
-
-		return nodes;
-	}
-
-	buildEdgesArray(){
-		let edges = [];
-
-		this.data.forEach((node, i) => {
-			node.neighbours.forEach((neighbour, j) => {
-				if(neighbour > i){ //to not double the edges, only undirected graphs allowed
-					edges.push([this.nodes[i], this.nodes[neighbour]]);
-				}
-			});
-
-		});
-
-		return edges;
 	}
 
 	start(){
@@ -197,16 +170,11 @@ class ForceDirectedGraph{
 		}
 	}
 
-	randomPosition(margin){
-		let xmin = margin;
-		let xmax = this.frame.width - margin;
-		let x = Math.random() * (xmax - xmin) + xmin;
+	randomizePositions(){
+		this.nodes.forEach((node, i) => {
+			node.position = Vector2D.randomPosition(new Vector2D(0, 0), new Vector2D(this.frame.width, this.frame.height), this.style.nodeRadius * 0.5);
+		});
 
-		let ymin = margin;
-		let ymax = this.frame.height - margin;
-		let y = Math.random() * (ymax - ymin) + ymin;
-
-		return new Vector2D(x, y);
 	}
 
 }

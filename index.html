@@ -9,7 +9,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 
 	<script src="js/Vector2D.js"></script>
-	<script src="js/GraphGenerator.js"></script>
+	<script src="js/GraphTools.js"></script>
 	<script src="js/ForceDirectedGraph.js"></script>
 	<script src="js/SimulationMethod.js"></script>
 	<script src="js/FruchtermanAndReingoldMethod.js"></script>
@@ -73,6 +73,17 @@
 		<label class="form-row form-justify-full">mnożnik sił między wierzchołkami: <input type="number" value="70" min="0" max="1000" id="internodesForceMultiplier"></label>
 		<div class="form-row form-justify-center">
 			<input type="button" value="Zastosuj" id="applyEadesVariables">
+		</div>
+	</template>
+
+	<template id="FARControls">
+		<div class="form-title">
+			Zmienne:
+		</div>
+		<label class="form-row form-justify-full">iteracje: <input type="number" value="100" min="0" max="10000" id="iterations"></label>
+		<label class="form-row form-justify-full">mnożnik temperatury: <input type="number" value="0.01" min="0" max="100" id="temperatureMultiplier"></label>
+		<div class="form-row form-justify-center">
+			<input type="button" value="Zastosuj" id="applyFARVariables">
 		</div>
 	</template>
 </body>

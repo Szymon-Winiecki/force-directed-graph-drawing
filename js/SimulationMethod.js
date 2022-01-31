@@ -25,6 +25,11 @@ class SimulationMethod{
     this.forceThreshold = parameters?.forceThreshold ?? 0.5;
   }
 
+  updateParameters({forceMultiplier, forceThreshold}){
+    this.forceMultiplier = forceMultiplier ?? this.forceMultiplier;
+    this.forceThreshold = forceThreshold ?? this.forceThreshold;
+  }
+
   calculateForces(){}
 
   applyForces(){

@@ -1,17 +1,24 @@
 
 class FruchtermanAndReingoldMethod extends SimulationMethod {
-  
-  temperature = (frame) => {
-    let max = Math.min(this.frame.width, this.frame.height) * 0.01;
-    let finalFrame = 150;
-    frame = Math.min(frame, finalFrame);
-    let progress = frame/finalFrame;
+
+  maxIterationsCount = 150;
+  temperatureMultiplier = 0.01;
+  temperature = (iteration) => {
+    let max = Math.min(this.frame.width, this.frame.height) * this.temperatureMultiplier;
+    iteration = Math.min(iteration, this.maxIterationsCount);
+    let progress = iteration/this.maxIterationsCount;
     return (1 - progress) * max;
   };
 
 
   constructor(nodes, edges, frame, parameters) {
     super(nodes, edges, frame, parameters);
+  }
+
+  updateParameters({forceMultiplier, forceThreshold, maxIterationsCount, temperatureMultiplier}){
+    super.updateParameters({forceMultiplier: forceMultiplier, forceThreshold: forceThreshold});
+    this.maxIterationsCount = maxIterationsCount ?? this.maxIterationsCount;
+    this.temperatureMultiplier = temperatureMultiplier ?? this.temperatureMultiplier;
   }
 
   calculateForces(){

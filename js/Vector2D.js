@@ -12,6 +12,18 @@ class Vector2D{
     return a.subtract(b).magnitude();
   }
 
+  static randomPosition(upperleft, bottomright, padding){
+    let xmin = upperleft.x + padding;
+    let xmax = bottomright.x - padding;
+    let x = Math.random() * (xmax - xmin) + xmin;
+
+    let ymin = upperleft.y + padding;
+    let ymax = bottomright.y - padding;
+    let y = Math.random() * (ymax - ymin) + ymin;
+
+    return new Vector2D(x, y);
+}
+
   copy(){
     return new Vector2D(this.x, this.y);
   }
