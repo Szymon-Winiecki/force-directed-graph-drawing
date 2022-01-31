@@ -37,24 +37,36 @@ class ForceDirectedGraph{
 	simulation;
 
 
-	constructor(data, parentSelector, style){
+	constructor({data, simulationMethod, simulationParameters, parentSelector, frame, style}){
 		this.data = data;
 		this.nodes = this.buildNodesArray();
 		this.edges = this.buildEdgesArray();
 
 		this.parentSelector = parentSelector;
 
-		if(style.width) this.frame.width = width;
-		if(style.height) this.frame.height = height;
-		if(style.background) this.style.background = background;
-		if(style.nodeRadius) this.style.nodeRadius = nodeRadius;
-		if(style.nodeColor) this.style.nodeColor = nodeColor;
-		if(style.edgeWidth) this.style.edgeWidth = edgeWidth;
-		if(style.edgeColor) this.style.edgeColor = edgeColor;
+		this.frame.width = frame?.width ?? 600;
+		this.frame.height = frame?.height ?? 600;
+
+		this.style.background = style?.background ?? "#FFF";
+		this.style.nodeRadius = style?.nodeRadius ?? 10;
+		this.style.nodeColor = style?.nodeColor ?? "#555";
+		this.style.edgeWidth = style?.edgeWidth ?? 2;
+		this.style.edgeColor = style?.edgeColor ?? "#CCC";
 
 		this.frame.padding = this.style.nodeRadius*0.5 + 4;
 
-		this.simulation = new EadesMethod(this.nodes, this.edges, this.frame);
+		if(simulationMethod == "Eades"){
+			this.simulation = new EadesMethod(this.nodes, this.edges, this.frame, simulationParameters);
+		}
+		else if(simulationMethod == "FruchtermanAndReingold"){
+			this.simulation = new FruchtermanAndReingoldMethod(this.nodes, this.edges, this.frame, simulationParameters);
+		}
+		else if(simulationMethod == "KamadaAndKawai"){
+			console.log("KamadaAndKawai method is not supported yet");
+		}
+		else{
+			console.log("unknown simulation method: " + simulationMethod);
+		}
 	}
 
 	buildNodesArray(){
@@ -107,6 +119,10 @@ class ForceDirectedGraph{
 
 	update(){
 
+		if(this.paused){
+			return;
+		}
+
 		this.simulation.calculateForces();
 		this.simulation.applyForces();
 
@@ -121,10 +137,12 @@ class ForceDirectedGraph{
 		this.time.deltaTime = currentTime - this.time.lastFrameTime;
 		this.time.lastFrameTime = currentTime;
 
-		if(this.paused){
-			return;
-		}
 		setTimeout(this.update.bind(this), d3.max([1, this.options.frametime - nzk])); //TODO: change to conditional upate AND protect from < 0 time
+	}
+
+	delete(){
+		this.pause();
+		d3.select(this.parentSelector).selectAll("svg").remove();
 	}
 
 	drawGraph(){
@@ -168,6 +186,15 @@ class ForceDirectedGraph{
 				d.position.x = e.x;
 				d.position.y = e.y;
 			}));
+	}
+
+	changeSimulationMethod(method){
+		if(method == "Eades"){
+			this.simulation = new EadesMethod(this.nodes, this.edges, this.frame);
+		}
+		else if(method == "FruchtermanAndReingold"){
+			this.simulation = new FruchtermanAndReingoldMethod(this.nodes, this.edges, this.frame);
+		}
 	}
 
 	randomPosition(margin){

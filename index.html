@@ -17,47 +17,63 @@
 	<script src="js/Main.js"></script>
 </head>
 <body>
+	<div class="wrapper">
 
-	<div id="graph-container">
+		<div class="controls">
+			<div class="form-row form-justify-center">
+				<input type="button" value="resume" id="resumeButton">
+				<input type="button" value="pause" id="pauseButton">
+				<input type="button" value="reset" id="resetButton">
+			</div>
 
+			<div class="form-title">
+				Generowanie losowego grafu
+			</div>
+			<label class="form-row form-justify-full">ilość wierzchołków: <input type="number" value="5" min="0" max="50" id="numberOfNodes"></label>
+			<label class="form-row form-justify-full">gęstość grafu: <input type="number" value="1" min="0" max="1" id="graphDensity"></label>
+			<div class="form-row form-justify-center">
+				<input type="button" value="Wygeneruj" id="generateGraph">
+			</div>
+
+			<div class="form-title">
+				Algorytm symulacji
+			</div>
+			<div class="form-col">
+				<label><input type="radio" name="method" id="EadesMethodRadio" checked> Eades</label>
+				<label><input type="radio" name="method" id="FARMethodRadio"> Fruchtermann and Reingold</label>
+				<label><input type="radio" name="method" id="KAKMethodRadio"> Kamada and Kawai</label>
+			</div>
+
+			<div class="form-title">
+				Właściwości symualcji
+			</div>
+			<label class="form-row form-justify-full">mnożnik sił: <input type="number" value="1" min="0" max="50" id="forceMultiplier"></label>
+			<label class="form-row form-justify-full">próg sił: <input type="number" value="0.5" min="0" max="50" id="forceThreshold"></label>
+			<div class="form-row form-justify-center">
+				<input type="button" value="Zastosuj" id="applySimulationSettings">
+			</div>
+
+			<div id="method-controls">
+
+			</div>
+
+		</div>
+
+		<div id="graph-container">
+
+		</div>
 	</div>
 
-	<div class="controls">
-		<div class="form-row form-justify-center">
-			<input type="button" value="resume" id="resumeButton">
-			<input type="button" value="pause" id="pauseButton">
-			<input type="button" value="reset" id="resetButton">
-		</div>
-
+	<template id="EadesControls">
 		<div class="form-title">
-			Generowanie losowego grafu
+			Zmienne:
 		</div>
-		<label class="form-row form-justify-full">ilość wierzchołków: <input type="number" value="5" min="0" max="50" id="numberOfNodes"></label>
-		<label class="form-row form-justify-full">gęstość grafu: <input type="number" value="1" min="0" max="1" id="graphDensity"></label>
+		<label class="form-row form-justify-full">mnożnik sił krawędzi: <input type="number" value="2" min="0" max="50" id="edgeForceMultiplier"></label>
+		<label class="form-row form-justify-full">długość krawędzi: <input type="number" value="70" min="0" max="1000" id="edgeLength"></label>
+		<label class="form-row form-justify-full">mnożnik sił między wierzchołkami: <input type="number" value="70" min="0" max="1000" id="internodesForceMultiplier"></label>
 		<div class="form-row form-justify-center">
-			<input type="button" value="Wygeneruj" id="drawGraph">
+			<input type="button" value="Zastosuj" id="applyEadesVariables">
 		</div>
-
-		<div class="form-title">
-			Algorytm symulacji
-		</div>
-		<div class="form-col">
-			<label><input type="radio" name="method"> Eades</label>
-			<label><input type="radio" name="method"> Fruchtermann and Reingold</label>
-			<label><input type="radio" name="method"> Kamada and Kawai</label>
-		</div>
-
-		<div class="form-title">
-			Właściwości symualcji
-		</div>
-		<label class="form-row form-justify-full">mnożnik sił: <input type="number" value="1" min="0" max="50" id="forceMultiplier"></label>
-		<label class="form-row form-justify-full">próg sił: <input type="number" value="0.5" min="0" max="50" id="forceThreshold"></label>
-		<div class="form-row form-justify-center">
-			<input type="button" value="Zastosuj" id="applyChanges">
-		</div>
-
-
-	</div>
-
+	</template>
 </body>
 </html>

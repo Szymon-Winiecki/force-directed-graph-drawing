@@ -5,6 +5,9 @@ class SimulationMethod{
 
   iteration = 0;
 
+  forceMultiplier = 1;
+  forceThreshold = 0.5;
+
   frame = {
     width : 0,
     height : 0,
@@ -12,11 +15,14 @@ class SimulationMethod{
   }
 
 
-  constructor(nodes, edges, frame){
+  constructor(nodes, edges, frame, parameters){
     this.nodes = nodes;
     this.edges = edges;
 
     this.frame = frame;
+
+    this.forceMultiplier = parameters?.forceMultiplier ?? 1;
+    this.forceThreshold = parameters?.forceThreshold ?? 0.5;
   }
 
   calculateForces(){}

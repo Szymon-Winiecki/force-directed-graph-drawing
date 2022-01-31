@@ -1,8 +1,6 @@
 
 class FruchtermanAndReingoldMethod extends SimulationMethod {
-
-  forceMultiplier = 1;
-  forceThreshold = 0.5;
+  
   temperature = (frame) => {
     let max = Math.min(this.frame.width, this.frame.height) * 0.01;
     let finalFrame = 150;
@@ -12,8 +10,8 @@ class FruchtermanAndReingoldMethod extends SimulationMethod {
   };
 
 
-  constructor(nodes, edges, frame) {
-    super(nodes, edges, frame);
+  constructor(nodes, edges, frame, parameters) {
+    super(nodes, edges, frame, parameters);
   }
 
   calculateForces(){
