@@ -3,7 +3,7 @@ class FruchtermanAndReingoldMethod extends SimulationMethod {
 
   maxIterationsCount = 150;
   temperatureMultiplier = 0.01;
-  
+
   temperature = (iteration) => {
     let max = Math.min(this.frame.width, this.frame.height) * this.temperatureMultiplier;
     iteration = Math.min(iteration, this.maxIterationsCount);
@@ -25,7 +25,7 @@ class FruchtermanAndReingoldMethod extends SimulationMethod {
   calculateForces(){
 		let area = this.frame.width * this.frame.height;
 		let k = Math.sqrt(area / this.nodes.length) * 3;
-		let k2 = k*k;
+		let k2 = k*k; //TODO: move this three variables calcualtion to init() method
 
 
 		//repulsive forces between each pair nodes
