@@ -38,7 +38,10 @@ class SimulationMethod{
     let bottomright = new Vector2D(this.frame.width - padding, this.frame.height - padding);
 
     this.nodes.forEach((node, i) => {
-      node.position = node.position.add(node.force.scale(this.forceMultiplier));
+      node.force = node.force.scale(this.forceMultiplier);
+      if(node.force.magnitude() >= this.forceThreshold){
+        node.position = node.position.add(node.force);
+      }
       node.position = node.position.clamp(upperleft, bottomright);
     });
 

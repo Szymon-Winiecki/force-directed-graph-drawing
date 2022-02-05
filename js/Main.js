@@ -47,7 +47,7 @@ function bindButtons(){
 
 	document.querySelector("#EadesMethodRadio").onchange = () => {
 		forceGraph.changeSimulationMethod("Eades");
-		loadEades(forceGraph);
+		loadEades();
 	}
 
 	document.querySelector("#FARMethodRadio").onchange = () => {
@@ -57,6 +57,24 @@ function bindButtons(){
 
 	document.querySelector("#KAKMethodRadio").onchange = () => {
 		forceGraph.changeSimulationMethod("KamadaAndKawai");
+	}
+
+	//simulation options
+
+	function updateSimulationOptions(){
+		forceGraph.simulation.forceMultiplier = parseFloat(document.querySelector("#forceMultiplier").value);
+		forceGraph.simulation.forceThreshold = parseFloat(document.querySelector("#forceThreshold").value);
+	}
+
+	function updateInputFields(){
+		document.querySelector("#forceMultiplier").value = forceGraph.simulation.forceMultiplier;
+		document.querySelector("#forceThreshold").value = forceGraph.simulation.forceThreshold;
+	}
+
+	updateInputFields();
+	document.querySelector('#applySimulationSettings').onclick  = () => {
+		updateSimulationOptions();
+		updateInputFields();
 	}
 }
 
@@ -71,18 +89,44 @@ function loadMethodControls(controlsTemplateSelector){
 
 function loadEades(){
 	loadMethodControls("#EadesControls");
+
+	function updateInputFields(){
+		document.querySelector("#edgeForceMultiplier").value = forceGraph.simulation.edgeForceMultiplier;
+		document.querySelector("#edgeLength").value = forceGraph.simulation.edgeLength;
+		document.querySelector("#internodesForceMultiplier").value = forceGraph.simulation.internodesForceMultiplier;
+	}
+
+	function updateSimulationVariables(){
+		forceGraph.simulation.edgeForceMultiplier = parseFloat(document.querySelector("#edgeForceMultiplier").value);
+		forceGraph.simulation.edgeLength = parseFloat(document.querySelector("#edgeLength").value);
+		forceGraph.simulation.internodesForceMultiplier = parseFloat(document.querySelector("#internodesForceMultiplier").value);
+	}
+
+	updateInputFields();
+
 	document.querySelector("#applyEadesVariables").onclick = () => {
-		forceGraph.simulation.edgeForceMultiplier = parseInt(document.querySelector("#edgeForceMultiplier").value);
-		forceGraph.simulation.edgeLength = parseInt(document.querySelector("#edgeLength").value);
-		forceGraph.simulation.internodesForceMultiplier = parseInt(document.querySelector("#internodesForceMultiplier").value);
+		updateSimulationVariables();
+		updateInputFields();
 	}
 }
 
 function loadFruchtermanAndReingold(){
 	loadMethodControls("#FARControls");
+
+	function updateInputFields(){
+		document.querySelector("#iterations").value = forceGraph.simulation.maxIterationsCount;
+		document.querySelector("#temperatureMultiplier").value = forceGraph.simulation.temperatureMultiplier;
+	}
+
+	function updateSimulationVariables(){
+		forceGraph.simulation.maxIterationsCount = parseInt(document.querySelector("#iterations").value);
+		forceGraph.simulation.temperatureMultiplier = parseFloat(document.querySelector("#temperatureMultiplier").value);
+	}
+
+	updateInputFields();
 	document.querySelector("#applyFARVariables").onclick = () => {
-		forceGraph.simulation.edgeForceMultiplier = parseInt(document.querySelector("#edgeForceMultiplier").value);
-		forceGraph.simulation.edgeLength = parseInt(document.querySelector("#edgeLength").value);
-		forceGraph.simulation.internodesForceMultiplier = parseInt(document.querySelector("#internodesForceMultiplier").value);
+		updateSimulationVariables();
+		updateInputFields();
+		forceGraph.simulation.iteration = 0;
 	}
 }

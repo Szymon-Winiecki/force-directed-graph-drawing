@@ -3,6 +3,7 @@ class FruchtermanAndReingoldMethod extends SimulationMethod {
 
   maxIterationsCount = 150;
   temperatureMultiplier = 0.01;
+  
   temperature = (iteration) => {
     let max = Math.min(this.frame.width, this.frame.height) * this.temperatureMultiplier;
     iteration = Math.min(iteration, this.maxIterationsCount);
