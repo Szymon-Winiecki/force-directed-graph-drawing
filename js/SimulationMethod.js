@@ -5,6 +5,9 @@ class SimulationMethod{
 
   iteration = 0;
 
+  forceMultiplier = 1;
+  forceThreshold = 0.5;
+
   frame = {
     width : 0,
     height : 0,
@@ -12,11 +15,19 @@ class SimulationMethod{
   }
 
 
-  constructor(nodes, edges, frame){
+  constructor(nodes, edges, frame, parameters){
     this.nodes = nodes;
     this.edges = edges;
 
     this.frame = frame;
+
+    this.forceMultiplier = parameters?.forceMultiplier ?? 1;
+    this.forceThreshold = parameters?.forceThreshold ?? 0.5;
+  }
+
+  updateParameters({forceMultiplier, forceThreshold}){
+    this.forceMultiplier = forceMultiplier ?? this.forceMultiplier;
+    this.forceThreshold = forceThreshold ?? this.forceThreshold;
   }
 
   calculateForces(){}
@@ -27,7 +38,10 @@ class SimulationMethod{
     let bottomright = new Vector2D(this.frame.width - padding, this.frame.height - padding);
 
     this.nodes.forEach((node, i) => {
-      node.position = node.position.add(node.force.scale(this.forceMultiplier));
+      node.force = node.force.scale(this.forceMultiplier);
+      if(node.force.magnitude() >= this.forceThreshold){
+        node.position = node.position.add(node.force);
+      }
       node.position = node.position.clamp(upperleft, bottomright);
     });
 

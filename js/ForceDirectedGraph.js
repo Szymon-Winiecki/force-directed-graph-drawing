@@ -6,6 +6,8 @@ class ForceDirectedGraph{
 
 	parentSelector;
 
+	paused = false;
+
 	frame = {
 		width : 600,
 		height : 600,
@@ -32,55 +34,40 @@ class ForceDirectedGraph{
 		frametime : 16
 	}
 
-	simulationMethod;
+	simulation;
 
 
-	constructor(data, parentSelector, style){
+	constructor({data, simulationMethod, simulationParameters, parentSelector, frame, style}){
 		this.data = data;
-		this.nodes = this.buildNodesArray();
-		this.edges = this.buildEdgesArray();
+		this.nodes = GraphTools.graphToNodes(this.data);
+		this.edges = GraphTools.graphToEdges(this.data, this.nodes);
+		this.randomizePositions();
 
 		this.parentSelector = parentSelector;
 
-		if(style.width) this.frame.width = width;
-		if(style.height) this.frame.height = height;
-		if(style.background) this.style.background = background;
-		if(style.nodeRadius) this.style.nodeRadius = nodeRadius;
-		if(style.nodeColor) this.style.nodeColor = nodeColor;
-		if(style.edgeWidth) this.style.edgeWidth = edgeWidth;
-		if(style.edgeColor) this.style.edgeColor = edgeColor;
+		this.frame.width = frame?.width ?? 600;
+		this.frame.height = frame?.height ?? 600;
+
+		this.style.background = style?.background ?? "#FFF";
+		this.style.nodeRadius = style?.nodeRadius ?? 10;
+		this.style.nodeColor = style?.nodeColor ?? "#555";
+		this.style.edgeWidth = style?.edgeWidth ?? 2;
+		this.style.edgeColor = style?.edgeColor ?? "#CCC";
 
 		this.frame.padding = this.style.nodeRadius*0.5 + 4;
 
-		this.simulation = new FruchtermanAndReingoldMethod(this.nodes, this.edges, this.frame);
-	}
-
-	buildNodesArray(){
-		let nodes = [];
-
-		this.data.forEach((item, i) => {
-			nodes.push({
-				position : this.randomPosition(this.style.nodeRadius * 0.5),
-				force :  new Vector2D(0, 0)
-			});
-		});
-
-		return nodes;
-	}
-
-	buildEdgesArray(){
-		let edges = [];
-
-		this.data.forEach((node, i) => {
-			node.neighbours.forEach((neighbour, j) => {
-				if(neighbour > i){ //to not double the edges, only undirected graphs allowed
-					edges.push([this.nodes[i], this.nodes[neighbour]]);
-				}
-			});
-
-		});
-
-		return edges;
+		if(simulationMethod == "Eades"){
+			this.simulation = new EadesMethod(this.nodes, this.edges, this.frame, simulationParameters);
+		}
+		else if(simulationMethod == "FruchtermanAndReingold"){
+			this.simulation = new FruchtermanAndReingoldMethod(this.nodes, this.edges, this.frame, simulationParameters);
+		}
+		else if(simulationMethod == "KamadaAndKawai"){
+			console.log("KamadaAndKawai method is not supported yet");
+		}
+		else{
+			console.log("unknown simulation method: " + simulationMethod);
+		}
 	}
 
 	start(){
@@ -92,7 +79,22 @@ class ForceDirectedGraph{
 		this.update();
 	}
 
+	pause(){
+		this.paused = true;
+	}
+
+	continue(){
+		if(this.paused){
+			this.paused = false;
+			this.update();
+		}
+	}
+
 	update(){
+
+		if(this.paused){
+			return;
+		}
 
 		this.simulation.calculateForces();
 		this.simulation.applyForces();
@@ -109,6 +111,11 @@ class ForceDirectedGraph{
 		this.time.lastFrameTime = currentTime;
 
 		setTimeout(this.update.bind(this), d3.max([1, this.options.frametime - nzk])); //TODO: change to conditional upate AND protect from < 0 time
+	}
+
+	delete(){
+		this.pause();
+		d3.select(this.parentSelector).selectAll("svg").remove();
 	}
 
 	drawGraph(){
@@ -148,21 +155,26 @@ class ForceDirectedGraph{
 			.attr("r", this.style.nodeRadius)
 			.attr("fill", this.style.nodeColor)
 			.call(d3.drag().on('drag', (e, d) => {
+				if(this.paused) return;
 				d.position.x = e.x;
 				d.position.y = e.y;
 			}));
 	}
 
-	randomPosition(margin){
-		let xmin = margin;
-		let xmax = this.frame.width - margin;
-		let x = Math.random() * (xmax - xmin) + xmin;
+	changeSimulationMethod(method){
+		if(method == "Eades"){
+			this.simulation = new EadesMethod(this.nodes, this.edges, this.frame);
+		}
+		else if(method == "FruchtermanAndReingold"){
+			this.simulation = new FruchtermanAndReingoldMethod(this.nodes, this.edges, this.frame);
+		}
+	}
 
-		let ymin = margin;
-		let ymax = this.frame.height - margin;
-		let y = Math.random() * (ymax - ymin) + ymin;
+	randomizePositions(){
+		this.nodes.forEach((node, i) => {
+			node.position = Vector2D.randomPosition(new Vector2D(0, 0), new Vector2D(this.frame.width, this.frame.height), this.style.nodeRadius * 0.5);
+		});
 
-		return new Vector2D(x, y);
 	}
 
 }
