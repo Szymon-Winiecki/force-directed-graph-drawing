@@ -9,8 +9,8 @@ class ForceDirectedGraph{
 	paused = false;
 
 	frame = {
-		width : 600,
-		height : 600,
+		width : 900,
+		height : 900,
 		margin : 0
 	};
 
@@ -45,8 +45,8 @@ class ForceDirectedGraph{
 
 		this.parentSelector = parentSelector;
 
-		this.frame.width = frame?.width ?? 600;
-		this.frame.height = frame?.height ?? 600;
+		this.frame.width = frame?.width ?? this.frame.width;
+		this.frame.height = frame?.height ?? this.frame.height;
 
 		this.style.background = style?.background ?? "#FFF";
 		this.style.nodeRadius = style?.nodeRadius ?? 10;

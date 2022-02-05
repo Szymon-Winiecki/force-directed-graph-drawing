@@ -8,9 +8,9 @@ class EadesMethod extends SimulationMethod{
   constructor(nodes, edges, frame, parameters) {
     super(nodes, edges, frame, parameters);
 
-    this.edgeForceMultiplier = parameters?.edgeForceMultiplier ?? 2;
-    this.edgeLength = parameters?.edgeLength ?? 120;
-    this.internodesForceMultiplier = parameters?.internodesForceMultiplier ?? 1000;
+    this.edgeForceMultiplier = parameters?.edgeForceMultiplier ?? this.edgeForceMultiplier;
+    this.edgeLength = parameters?.edgeLength ?? this.edgeLength;
+    this.internodesForceMultiplier = parameters?.internodesForceMultiplier ?? this.internodesForceMultiplier;
   }
 
   updateParameters({forceMultiplier, forceThreshold, edgeForceMultiplier, edgeLength, internodesForceMultiplier}){

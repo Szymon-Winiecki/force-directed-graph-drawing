@@ -27,6 +27,15 @@ function bindButtons(){
 
 	}
 
+	document.querySelector("#generateTree").onclick = () => {
+		let numberOfNodes = parseInt(document.querySelector("#numberOfNodes").value);
+		let data  = GraphTools.randomTree(numberOfNodes);
+
+		forceGraph.delete();
+		forceGraph = new ForceDirectedGraph({data:data, parentSelector:"#graph-container", simulationMethod:"Eades"});
+		forceGraph.start();
+	}
+
 	//controls
 
 	document.querySelector("#resumeButton").onclick = () => {

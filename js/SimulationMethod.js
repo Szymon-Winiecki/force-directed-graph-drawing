@@ -6,7 +6,7 @@ class SimulationMethod{
   iteration = 0;
 
   forceMultiplier = 1;
-  forceThreshold = 0.5;
+  forceThreshold = 0.05;
 
   frame = {
     width : 0,
@@ -21,14 +21,16 @@ class SimulationMethod{
 
     this.frame = frame;
 
-    this.forceMultiplier = parameters?.forceMultiplier ?? 1;
-    this.forceThreshold = parameters?.forceThreshold ?? 0.5;
+    this.forceMultiplier = parameters?.forceMultiplier ?? this.forceMultiplier;
+    this.forceThreshold = parameters?.forceThreshold ?? this.forceThreshold;
   }
 
   updateParameters({forceMultiplier, forceThreshold}){
     this.forceMultiplier = forceMultiplier ?? this.forceMultiplier;
     this.forceThreshold = forceThreshold ?? this.forceThreshold;
   }
+
+  init(){}
 
   calculateForces(){}
 
