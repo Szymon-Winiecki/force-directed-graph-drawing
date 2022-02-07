@@ -21,12 +21,26 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
   constructor(nodes, edges, frame, parameters) {
     super(nodes, edges, frame, parameters);
 
-    /*this.edgeForceMultiplier = parameters?.edgeForceMultiplier ?? 2;
-    this.edgeLength = parameters?.edgeLength ?? 120;
-    this.internodesForceMultiplier = parameters?.internodesForceMultiplier ?? 1000;*/
+    this.updateParameters(parameters);
+  }
+
+  updateParameters(parameters){
+    super.updateParameters({forceMultiplier: parameters?.forceMultiplier, forceThreshold: parameters?.forceThreshold});
+    this.temperatureMax = parameters?.temperatureMax ?? this.temperatureMax;
+    this.temperatureMin = parameters?.temperatureMin ?? this.temperatureMin;
+    this.temperatureInit = parameters?.temperatureInit ?? this.temperatureInit;
+    this.gravitationalConstant = parameters?.gravitationalConstant ?? this.gravitationalConstant;
+    this.randomDisturbanceRange = parameters?.randomDisturbanceRange ?? this.randomDisturbanceRange;
+    this.desiredEdgeLength = parameters?.desiredEdgeLength ?? this.desiredEdgeLength;
+    this.minOscillataionDetection = parameters?.minOscillataionDetection ?? this.minOscillataionDetection;
+    this.minRotationDetection = parameters?.minRotationDetection ?? this.minRotationDetection;
+    this.sensitivityTowardsOscillation = parameters?.sensitivityTowardsOscillation ?? this.sensitivityTowardsOscillation;
+    this.sensitivityTowardsRotation = parameters?.sensitivityTowardsRotation ?? this.sensitivityTowardsRotation;
   }
 
   init(){
+    this.temperatureGlobal = this.temperatureMax;
+
     this.nodes.forEach((node, i) => {
       node.cpos = node.position.copy();
       node.lastImpulse = new Vector2D(0,0);
@@ -37,14 +51,12 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
   }
 
   calculateForces(){
-    //calc global temperature
+    if(this.temperatureGlobal < this.temperatureMin){
+      //return;
+    }
 
-    /*if(this.temperatureGlobal < this.temperatureMin){
-      return;
-    }*/
-
+    this.temperatureGlobal = 0;
     let permutation = this.randomPermutation(this.nodes);
-
     permutation.forEach((choosen, i) => {
       let impulse = this.computeImpulse(choosen);
       this.updateTemperature(choosen, impulse);
@@ -136,27 +148,31 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
   }
 
   updateTemperature(node, impulse){
-    if(impulse.magnitude() == 0) return;
 
-    impulse = impulse.scale(node.temperature);
-    node.cpos = node.cpos.add(impulse);
-
-    if(node.lastImpulse.magnitude() == 0) return;
-
-    let sinb = node.lastImpulse.subtract(impulse).magnitude() / impulse.magnitude();
-    if(sinb >= Math.sin(Math.PI/2 + this.minRotationDetection/2)){
-      node.skewGauge += this.sensitivityTowardsRotation * Math.sign(sinb);
+    if(impulse.magnitude() != 0){
+      impulse = impulse.scale(node.temperature);
+      node.cpos = node.cpos.add(impulse);
     }
 
-    let cosb = node.lastImpulse.magnitude() / impulse.magnitude();
-    if(Math.abs(cosb) >= math.cos(this.minOscillataionDetection/2)){
-      node.temperature *= this.sensitivityTowardsOscillation * cosb;
+    if(impulse.magnitude() != 0 && node.lastImpulse.magnitude() != 0){
+      let sinb = Math.sin(impulse.angle(node.lastImpulse));
+      if(sinb > Math.sin(Math.PI/2 + this.minRotationDetection/2)){
+        console.log("sin: " + sinb);
+        node.skewGauge += this.sensitivityTowardsRotation * Math.sign(sinb);
+      }
+
+      let cosb = Math.cos(impulse.angle(node.lastImpulse));
+      if(Math.abs(cosb) > Math.cos(this.minOscillataionDetection/2)){
+        console.log("cos: " + cosb);
+        node.temperature *= this.sensitivityTowardsOscillation * cosb;
+      }
     }
 
     node.temperature *= 1 - Math.abs(node.skewGauge);
     node.temperature = Math.min(node.temperature, this.temperatureMax);
 
     node.lastImpulse = impulse;
+    this.temperatureGlobal += node.temperature;
   }
 
   applyForces(){
