@@ -51,7 +51,7 @@ class FruchtermanAndReingoldMethod extends SimulationMethod {
 			edge[1].force = edge[1].force.add(forceDir.scale(forceVal));
 		});
 
-		//repulsive forces between each node and frame borders AND force clam to temperature
+		//repulsive forces between each node and frame borders AND force clamp to temperature
 		this.nodes.forEach((node, i) => {
 			let borderForce = new Vector2D(0, 0);
 			borderForce.x += k2 / node.position.x;

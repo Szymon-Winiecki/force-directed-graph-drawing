@@ -1,0 +1,170 @@
+
+class FrickLudwigMehldauMethod extends SimulationMethod {
+
+  temperatureMax = 10;
+  temperatureMin = 3;
+  temperatureInit = 0.01;
+
+  gravitationalConstant = 0.0625;
+
+  randomDisturbanceRange = 16;
+
+  desiredEdgeLength = 120;
+
+  minOscillataionDetection = Math.PI/2;
+  minRotationDetection = Math.PI/3;
+  sensitivityTowardsOscillation = 1;
+  sensitivityTowardsRotation = 0.5;
+
+  temperatureGlobal;
+
+  constructor(nodes, edges, frame, parameters) {
+    super(nodes, edges, frame, parameters);
+
+    /*this.edgeForceMultiplier = parameters?.edgeForceMultiplier ?? 2;
+    this.edgeLength = parameters?.edgeLength ?? 120;
+    this.internodesForceMultiplier = parameters?.internodesForceMultiplier ?? 1000;*/
+  }
+
+  init(){
+    this.nodes.forEach((node, i) => {
+      node.cpos = node.position.copy();
+      node.lastImpulse = new Vector2D(0,0);
+      node.temperature = this.temperatureInit;
+      node.skewGauge = 0;
+    });
+
+  }
+
+  calculateForces(){
+    //calc global temperature
+
+    /*if(this.temperatureGlobal < this.temperatureMin){
+      return;
+    }*/
+
+    let permutation = this.randomPermutation(this.nodes);
+
+    permutation.forEach((choosen, i) => {
+      let impulse = this.computeImpulse(choosen);
+      this.updateTemperature(choosen, impulse);
+    });
+
+  }
+
+  randomPermutation(nodes){
+    let permutation = new Array();
+    nodes.forEach((node, i) => {
+      permutation.push(node);
+    });
+
+    for(let i = 0; i < permutation.length; i++){
+      let rm = parseInt(Math.random() * (permutation.length - 1 - i) + i);
+
+      let tmp = permutation[i];
+      permutation[i] = permutation[rm];
+      permutation[rm] = tmp;
+    }
+
+    return permutation;
+  }
+
+  computeImpulse(node){
+    //degree function
+    let phi = 1 + node.neighbours.length/2;  //TODO: move to init
+
+    //center of gravity //TODO: change to calc barycenter of the subgraph, not whole graph
+    let center = new Vector2D(0, 0);
+    this.nodes.forEach((item, i) => {
+      center = center.add(item.cpos);
+    });
+    center = center.scale(1/this.nodes.length);
+
+    let impulse = new Vector2D(0,0);
+    //attraction to center of gravity
+    //impulse = impulse.add(center.subtract(node.cpos).scale(this.gravitationalConstant * phi));
+
+    //random disturbance
+    let randomDisturbance = Vector2D.randomPosition(new Vector2D(-this.randomDisturbanceRange, -this.randomDisturbanceRange), new Vector2D(this.randomDisturbanceRange, this.randomDisturbanceRange), 0);
+    impulse = impulse.add(randomDisturbance);
+
+    //internodes repulsive forces
+    this.nodes.forEach((other, i) => {
+      if (node == other) return;
+      let distance = node.cpos.subtract(other.cpos);
+      let repulsiveForce = new Vector2D(0, 0);
+      if(distance.magnitude() != 0) repulsiveForce = distance.scale(Math.pow(this.desiredEdgeLength, 2) / Math.pow(distance.magnitude(), 2));
+
+      if(repulsiveForce.magnitude() == Infinity){
+        console.log("repulsive");
+        repulsiveForce = new Vector2D(0, 0);
+      }
+
+      impulse = impulse.add(repulsiveForce);
+    });
+
+    //edges attractive forces
+    node.neighbours.forEach((neighbour, i) => {
+      let distance = node.cpos.subtract(neighbour.cpos);
+      let attractiveForce = distance.scale((-1 * Math.pow(distance.magnitude(), 2)) / (Math.pow(this.desiredEdgeLength, 2) * phi));
+
+      if(attractiveForce.magnitude() == Infinity) {
+        console.log("attractive");
+        attractiveForce = new Vector2D(0, 0);
+      }
+
+      impulse = impulse.add(attractiveForce);
+    });
+
+    //repulsive forces with frame borders
+
+    let borderForce = new Vector2D(0, 0);
+    borderForce.x += Math.pow(this.desiredEdgeLength, 2) / Math.pow(node.position.x, 2);
+    borderForce.x -= Math.pow(this.desiredEdgeLength, 2) / Math.pow((this.frame.width - node.position.x), 2);
+    borderForce.y += Math.pow(this.desiredEdgeLength, 2) / Math.pow(node.position.y, 2);
+    borderForce.y -= Math.pow(this.desiredEdgeLength, 2) / Math.pow((this.frame.height - node.position.y), 2);
+
+    if(borderForce.magnitude() == Infinity){
+      console.log("border");
+      borderForce = new Vector2D(0, 0);
+    }
+
+    impulse = impulse.add(borderForce.scale(10));
+
+    return impulse;
+
+  }
+
+  updateTemperature(node, impulse){
+    if(impulse.magnitude() == 0) return;
+
+    impulse = impulse.scale(node.temperature);
+    node.cpos = node.cpos.add(impulse);
+
+    if(node.lastImpulse.magnitude() == 0) return;
+
+    let sinb = node.lastImpulse.subtract(impulse).magnitude() / impulse.magnitude();
+    if(sinb >= Math.sin(Math.PI/2 + this.minRotationDetection/2)){
+      node.skewGauge += this.sensitivityTowardsRotation * Math.sign(sinb);
+    }
+
+    let cosb = node.lastImpulse.magnitude() / impulse.magnitude();
+    if(Math.abs(cosb) >= math.cos(this.minOscillataionDetection/2)){
+      node.temperature *= this.sensitivityTowardsOscillation * cosb;
+    }
+
+    node.temperature *= 1 - Math.abs(node.skewGauge);
+    node.temperature = Math.min(node.temperature, this.temperatureMax);
+
+    node.lastImpulse = impulse;
+  }
+
+  applyForces(){
+    this.nodes.forEach((node, i) => {
+      node.position = node.cpos;
+    });
+
+    this.iteration++;
+  }
+
+}

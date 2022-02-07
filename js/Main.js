@@ -64,8 +64,8 @@ function bindButtons(){
 		loadFruchtermanAndReingold();
 	}
 
-	document.querySelector("#KAKMethodRadio").onchange = () => {
-		forceGraph.changeSimulationMethod("KamadaAndKawai");
+	document.querySelector("#FLMMethodRadio").onchange = () => {
+		forceGraph.changeSimulationMethod("FrickLudwigMehldau");
 	}
 
 	//simulation options

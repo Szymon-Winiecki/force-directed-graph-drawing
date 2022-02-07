@@ -102,9 +102,16 @@ class GraphTools{
 		graph.forEach((item, i) => {
 			nodes.push({
 				position : new Vector2D(0, 0),
-				force :  new Vector2D(0, 0)
+				force :  new Vector2D(0, 0),
+        neighbours : new Array()
 			});
 		});
+
+    graph.forEach((item, i) => {
+      item.neighbours.forEach((neighbour, j) => {
+        nodes[i].neighbours.push(nodes[neighbour]);
+      });
+    });
 
 		return nodes;
 	}
