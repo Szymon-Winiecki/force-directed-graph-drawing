@@ -10,8 +10,7 @@ class GraphTools{
     }
 
     for(let i = 0; i < nodes; i++){
-      for(let j = 0; j < nodes; j++){
-        if(j == i) continue;
+      for(let j = i+1; j < nodes; j++){
         if(Math.random() < density){
           neighbours[i].push(j);
           neighbours[j].push(i);
@@ -102,9 +101,16 @@ class GraphTools{
 		graph.forEach((item, i) => {
 			nodes.push({
 				position : new Vector2D(0, 0),
-				force :  new Vector2D(0, 0)
+				force :  new Vector2D(0, 0),
+        neighbours : new Array()
 			});
 		});
+
+    graph.forEach((item, i) => {
+      item.neighbours.forEach((neighbour, j) => {
+        nodes[i].neighbours.push(nodes[neighbour]);
+      });
+    });
 
 		return nodes;
 	}

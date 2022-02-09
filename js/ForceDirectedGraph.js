@@ -65,6 +65,9 @@ class ForceDirectedGraph{
 		else if(simulationMethod == "KamadaAndKawai"){
 			console.log("KamadaAndKawai method is not supported yet");
 		}
+		else if(simulationMethod == "FrickLudwigMehldau"){
+			this.simulation = new FrickLudwigMehldauMethod(this.nodes, this.edges, this.frame, simulationParameters);
+		}
 		else{
 			console.log("unknown simulation method: " + simulationMethod);
 		}
@@ -75,6 +78,8 @@ class ForceDirectedGraph{
 		this.time.lastFrameTime = this.time.startTime;
 
 		this.options.frametime = 1000/this.options.framerate
+
+		this.simulation.init();
 
 		this.update();
 	}
@@ -168,6 +173,10 @@ class ForceDirectedGraph{
 		else if(method == "FruchtermanAndReingold"){
 			this.simulation = new FruchtermanAndReingoldMethod(this.nodes, this.edges, this.frame);
 		}
+		else if(method == "FrickLudwigMehldau"){
+			this.simulation = new FrickLudwigMehldauMethod(this.nodes, this.edges, this.frame);
+		}
+		this.simulation.init();
 	}
 
 	randomizePositions(){

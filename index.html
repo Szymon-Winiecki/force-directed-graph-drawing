@@ -14,6 +14,7 @@
 	<script src="js/SimulationMethod.js"></script>
 	<script src="js/FruchtermanAndReingoldMethod.js"></script>
 	<script src="js/EadesMethod.js"></script>
+	<script src="js/FrickLudwigMehldauMethod.js"></script>
 	<script src="js/Main.js"></script>
 </head>
 <body>
@@ -35,6 +36,9 @@
 				<input type="button" value="Wygeneruj graf" id="generateGraph">
 				<input type="button" value="Wygeneruj drzewo" id="generateTree">
 			</div>
+			<div class="form-row form-justify-center">
+				<input type="button" value="pobierz graf (json)" id="downlaodGraphJson">
+			</div>
 
 			<div class="form-title">
 				Algorytm symulacji
@@ -42,7 +46,7 @@
 			<div class="form-col">
 				<label><input type="radio" name="method" id="EadesMethodRadio" checked> Eades</label>
 				<label><input type="radio" name="method" id="FARMethodRadio"> Fruchtermann and Reingold</label>
-				<label><input type="radio" name="method" id="KAKMethodRadio"> Kamada and Kawai</label>
+				<label><input type="radio" name="method" id="FLMMethodRadio"> Frick, Ludwig and Mehldau</label>
 			</div>
 
 			<div class="form-title">
@@ -85,6 +89,25 @@
 		<label class="form-row form-justify-full">mnożnik temperatury: <input type="number" value="0.01" min="0" max="100" id="temperatureMultiplier"></label>
 		<div class="form-row form-justify-center">
 			<input type="button" value="Zastosuj" id="applyFARVariables">
+		</div>
+	</template>
+
+	<template id="FLMControls">
+		<div class="form-title">
+			Zmienne:
+		</div>
+		<label class="form-row form-justify-full">temperatureMax: <input type="number" value="100" min="0" max="10000" id="temperatureMax"></label>
+		<label class="form-row form-justify-full">temperatureMin: <input type="number" value="100" min="0" max="10000" id="temperatureMin"></label>
+		<label class="form-row form-justify-full">temperatureInit: <input type="number" value="100" min="0" max="10000" id="temperatureInit"></label>
+		<label class="form-row form-justify-full">gravitationalConstant: <input type="number" value="100" min="0" max="10000" id="gravitationalConstant"></label>
+		<label class="form-row form-justify-full">randomDisturbanceRange: <input type="number" value="100" min="0" max="10000" id="randomDisturbanceRange"></label>
+		<label class="form-row form-justify-full">desiredEdgeLength: <input type="number" value="100" min="0" max="10000" id="desiredEdgeLength"></label>
+		<label class="form-row form-justify-full">minOscillataionDetection: <input type="number" value="100" min="0" max="10000" id="minOscillataionDetection"></label>
+		<label class="form-row form-justify-full">minRotationDetection: <input type="number" value="100" min="0" max="10000" id="minRotationDetection"></label>
+		<label class="form-row form-justify-full">sensitivityTowardsOscillation: <input type="number" value="100" min="0" max="10000" id="sensitivityTowardsOscillation"></label>
+		<label class="form-row form-justify-full">sensitivityTowardsRotation: <input type="number" value="100" min="0" max="10000" id="sensitivityTowardsRotation"></label>
+		<div class="form-row form-justify-center">
+			<input type="button" value="Zastosuj" id="applyFLMVariables">
 		</div>
 	</template>
 </body>

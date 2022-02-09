@@ -36,6 +36,20 @@ function bindButtons(){
 		forceGraph.start();
 	}
 
+	document.querySelector('#downlaodGraphJson').onclick = () => {
+
+		let content = JSON.stringify(forceGraph.data);
+
+	  const a = document.createElement('a');
+	  const file = new Blob([content], {type: "application/json"});
+
+	  a.href= URL.createObjectURL(file);
+	  a.download = 'graph.json';
+	  a.click();
+
+		URL.revokeObjectURL(a.href);
+	}
+
 	//controls
 
 	document.querySelector("#resumeButton").onclick = () => {
@@ -48,6 +62,7 @@ function bindButtons(){
 
 	document.querySelector("#resetButton").onclick = () => {
 		forceGraph.randomizePositions();
+		forceGraph.simulation.init();
 		forceGraph.simulation.iteration = 0;
 	};
 
@@ -64,8 +79,9 @@ function bindButtons(){
 		loadFruchtermanAndReingold();
 	}
 
-	document.querySelector("#KAKMethodRadio").onchange = () => {
-		forceGraph.changeSimulationMethod("KamadaAndKawai");
+	document.querySelector("#FLMMethodRadio").onchange = () => {
+		forceGraph.changeSimulationMethod("FrickLudwigMehldau");
+		loadFrickLudwigMehldau();
 	}
 
 	//simulation options
@@ -134,6 +150,47 @@ function loadFruchtermanAndReingold(){
 
 	updateInputFields();
 	document.querySelector("#applyFARVariables").onclick = () => {
+		updateSimulationVariables();
+		updateInputFields();
+		forceGraph.simulation.iteration = 0;
+	}
+}
+
+function loadFrickLudwigMehldau(){
+	loadMethodControls("#FLMControls");
+
+	function updateInputFields(){
+		document.querySelector("#temperatureMax").value = forceGraph.simulation.temperatureMax;
+		document.querySelector("#temperatureMin").value = forceGraph.simulation.temperatureMin;
+		document.querySelector("#temperatureInit").value = forceGraph.simulation.temperatureInit;
+		document.querySelector("#gravitationalConstant").value = forceGraph.simulation.gravitationalConstant;
+		document.querySelector("#randomDisturbanceRange").value = forceGraph.simulation.randomDisturbanceRange;
+		document.querySelector("#desiredEdgeLength").value = forceGraph.simulation.desiredEdgeLength;
+		document.querySelector("#minOscillataionDetection").value = forceGraph.simulation.minOscillataionDetection;
+		document.querySelector("#minRotationDetection").value = forceGraph.simulation.minRotationDetection;
+		document.querySelector("#sensitivityTowardsOscillation").value = forceGraph.simulation.sensitivityTowardsOscillation;
+		document.querySelector("#sensitivityTowardsRotation").value = forceGraph.simulation.sensitivityTowardsRotation;
+	}
+
+	function updateSimulationVariables(){
+		let parameters = {
+			temperatureMax : parseFloat(document.querySelector("#temperatureMax").value),
+			temperatureMin : parseFloat(document.querySelector("#temperatureMin").value),
+			temperatureInit : parseFloat(document.querySelector("#temperatureInit").value),
+			gravitationalConstant : parseFloat(document.querySelector("#gravitationalConstant").value),
+			randomDisturbanceRange : parseFloat(document.querySelector("#randomDisturbanceRange").value),
+			desiredEdgeLength : parseFloat(document.querySelector("#desiredEdgeLength").value),
+			minOscillataionDetection : parseFloat(document.querySelector("#minOscillataionDetection").value),
+			minRotationDetection : parseFloat(document.querySelector("#minRotationDetection").value),
+			sensitivityTowardsOscillation : parseFloat(document.querySelector("#sensitivityTowardsOscillation").value),
+			sensitivityTowardsRotation :  parseFloat(document.querySelector("#sensitivityTowardsRotation").value)
+		}
+
+		forceGraph.simulation.updateParameters(parameters);
+	}
+
+	updateInputFields();
+	document.querySelector("#applyFLMVariables").onclick = () => {
 		updateSimulationVariables();
 		updateInputFields();
 		forceGraph.simulation.iteration = 0;

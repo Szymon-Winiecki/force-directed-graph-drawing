@@ -40,6 +40,14 @@ class Vector2D{
     return new Vector2D(this.x * s, this.y * s);
   }
 
+  dotProduct(other){
+    return (this.x * other.x + this.y * other.y);
+  }
+
+  angle(other){
+    return Math.acos(this.dotProduct(other));
+  }
+
   magnitude(){
     return Math.sqrt(this.sqrMagnitude());
   }
