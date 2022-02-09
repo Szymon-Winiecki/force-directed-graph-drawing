@@ -1,11 +1,12 @@
 window.onload = start;
 
 let forceGraph;
+let currentSimulationMethod = "Eades";
 
 function start(){
 	let data = GraphTools.randomGraph(5, 1);
 
-	forceGraph = new ForceDirectedGraph({data:data, parentSelector:"#graph-container", simulationMethod:"Eades"});
+	forceGraph = new ForceDirectedGraph({data:data, parentSelector:"#graph-container", simulationMethod:currentSimulationMethod});
 	forceGraph.start();
 
 	bindButtons();
@@ -13,6 +14,30 @@ function start(){
 }
 
 function bindButtons(){
+
+	//graph uploading
+
+	document.querySelector("#uploadGraph").onchange = (event) => {
+		const fileList = event.target.files;
+
+		let reader = new FileReader();
+		reader.addEventListener('load', function(e) {
+		    let text = e.target.result;
+				let data = JSON.parse(text);
+
+				forceGraph.delete();
+				forceGraph = new ForceDirectedGraph({data:data, parentSelector:"#graph-container", simulationMethod:currentSimulationMethod});
+				forceGraph.start();
+		});
+
+		reader.addEventListener('error', function() {
+		    alert('Error : Failed to read file');
+		});
+
+		if(fileList[0]){
+			reader.readAsText(fileList[0]);
+		}
+	}
 
 	//graph generation
 
@@ -22,7 +47,7 @@ function bindButtons(){
 		let data  = GraphTools.randomGraph(numberOfNodes, density);
 
 		forceGraph.delete();
-		forceGraph = new ForceDirectedGraph({data:data, parentSelector:"#graph-container", simulationMethod:"Eades"});
+		forceGraph = new ForceDirectedGraph({data:data, parentSelector:"#graph-container", simulationMethod:currentSimulationMethod});
 		forceGraph.start();
 
 	}
@@ -32,7 +57,7 @@ function bindButtons(){
 		let data  = GraphTools.randomTree(numberOfNodes);
 
 		forceGraph.delete();
-		forceGraph = new ForceDirectedGraph({data:data, parentSelector:"#graph-container", simulationMethod:"Eades"});
+		forceGraph = new ForceDirectedGraph({data:data, parentSelector:"#graph-container", simulationMethod:currentSimulationMethod});
 		forceGraph.start();
 	}
 
@@ -70,17 +95,20 @@ function bindButtons(){
 	//simulation method
 
 	document.querySelector("#EadesMethodRadio").onchange = () => {
-		forceGraph.changeSimulationMethod("Eades");
+		currentSimulationMethod = "Eades";
+		forceGraph.changeSimulationMethod(currentSimulationMethod);
 		loadEades();
 	}
 
 	document.querySelector("#FARMethodRadio").onchange = () => {
-		forceGraph.changeSimulationMethod("FruchtermanAndReingold");
+		currentSimulationMethod = "FruchtermanAndReingold";
+		forceGraph.changeSimulationMethod(currentSimulationMethod);
 		loadFruchtermanAndReingold();
 	}
 
 	document.querySelector("#FLMMethodRadio").onchange = () => {
-		forceGraph.changeSimulationMethod("FrickLudwigMehldau");
+		currentSimulationMethod = "FrickLudwigMehldau";
+		forceGraph.changeSimulationMethod(currentSimulationMethod);
 		loadFrickLudwigMehldau();
 	}
 
