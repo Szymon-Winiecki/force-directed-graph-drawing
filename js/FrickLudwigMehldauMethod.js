@@ -3,16 +3,16 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
 
   temperatureMax = 10;
   temperatureMin = 3;
-  temperatureInit = 0.01;
+  temperatureInit = 6;
 
-  gravitationalConstant = 0.0625;
+  gravitationalConstant = 0; //0.0625
 
-  randomDisturbanceRange = 16;
+  randomDisturbanceRange = 0;
 
-  desiredEdgeLength = 120;
+  desiredEdgeLength = 60;
 
-  minOscillataionDetection = Math.PI/2;
-  minRotationDetection = Math.PI/3;
+  minOscillataionDetection = 1.3;
+  minRotationDetection = 1.3;
   sensitivityTowardsOscillation = 1;
   sensitivityTowardsRotation = 0.5;
 
@@ -51,6 +51,7 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
   }
 
   calculateForces(){
+    console.log(this.temperatureGlobal);
     if(this.temperatureGlobal < this.temperatureMin){
       //return;
     }
@@ -94,7 +95,7 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
 
     let impulse = new Vector2D(0,0);
     //attraction to center of gravity
-    //impulse = impulse.add(center.subtract(node.cpos).scale(this.gravitationalConstant * phi));
+    impulse = impulse.add(center.subtract(node.cpos).scale(this.gravitationalConstant * phi));
 
     //random disturbance
     let randomDisturbance = Vector2D.randomPosition(new Vector2D(-this.randomDisturbanceRange, -this.randomDisturbanceRange), new Vector2D(this.randomDisturbanceRange, this.randomDisturbanceRange), 0);
@@ -105,7 +106,7 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
       if (node == other) return;
       let distance = node.cpos.subtract(other.cpos);
       let repulsiveForce = new Vector2D(0, 0);
-      if(distance.magnitude() != 0) repulsiveForce = distance.scale(Math.pow(this.desiredEdgeLength, 2) / Math.pow(distance.magnitude(), 2));
+      if(distance.magnitude() != 0) repulsiveForce = distance.normalize().scale(Math.pow(this.desiredEdgeLength, 2) / Math.pow(distance.magnitude(), 2));
 
       if(repulsiveForce.magnitude() == Infinity){
         console.log("repulsive");
@@ -118,7 +119,7 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
     //edges attractive forces
     node.neighbours.forEach((neighbour, i) => {
       let distance = node.cpos.subtract(neighbour.cpos);
-      let attractiveForce = distance.scale((-1 * Math.pow(distance.magnitude(), 2)) / (Math.pow(this.desiredEdgeLength, 2) * phi));
+      let attractiveForce = distance.normalize().scale((-1 * Math.pow(distance.magnitude(), 2)) / (Math.pow(this.desiredEdgeLength, 2) * phi));
 
       if(attractiveForce.magnitude() == Infinity) {
         console.log("attractive");
@@ -130,7 +131,7 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
 
     //repulsive forces with frame borders
 
-    let borderForce = new Vector2D(0, 0);
+    /*let borderForce = new Vector2D(0, 0);
     borderForce.x += Math.pow(this.desiredEdgeLength, 2) / Math.pow(node.position.x, 2);
     borderForce.x -= Math.pow(this.desiredEdgeLength, 2) / Math.pow((this.frame.width - node.position.x), 2);
     borderForce.y += Math.pow(this.desiredEdgeLength, 2) / Math.pow(node.position.y, 2);
@@ -141,7 +142,7 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
       borderForce = new Vector2D(0, 0);
     }
 
-    impulse = impulse.add(borderForce.scale(10));
+    impulse = impulse.add(borderForce.scale(10));*/
 
     return impulse;
 
@@ -157,13 +158,11 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
     if(impulse.magnitude() != 0 && node.lastImpulse.magnitude() != 0){
       let sinb = Math.sin(impulse.angle(node.lastImpulse));
       if(sinb > Math.sin(Math.PI/2 + this.minRotationDetection/2)){
-        console.log("sin: " + sinb);
         node.skewGauge += this.sensitivityTowardsRotation * Math.sign(sinb);
       }
 
       let cosb = Math.cos(impulse.angle(node.lastImpulse));
       if(Math.abs(cosb) > Math.cos(this.minOscillataionDetection/2)){
-        console.log("cos: " + cosb);
         node.temperature *= this.sensitivityTowardsOscillation * cosb;
       }
     }
@@ -176,7 +175,12 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
   }
 
   applyForces(){
+    let padding = this.frame.padding;
+    let upperleft = new Vector2D(padding, padding);
+    let bottomright = new Vector2D(this.frame.width - padding, this.frame.height - padding);
+
     this.nodes.forEach((node, i) => {
+      node.cpos = node.cpos.clamp(upperleft, bottomright, padding);
       node.position = node.cpos;
     });
 

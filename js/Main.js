@@ -36,6 +36,20 @@ function bindButtons(){
 		forceGraph.start();
 	}
 
+	document.querySelector('#downlaodGraphJson').onclick = () => {
+
+		let content = JSON.stringify(forceGraph.data);
+
+	  const a = document.createElement('a');
+	  const file = new Blob([content], {type: "application/json"});
+
+	  a.href= URL.createObjectURL(file);
+	  a.download = 'graph.json';
+	  a.click();
+
+		URL.revokeObjectURL(a.href);
+	}
+
 	//controls
 
 	document.querySelector("#resumeButton").onclick = () => {

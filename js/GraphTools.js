@@ -10,8 +10,7 @@ class GraphTools{
     }
 
     for(let i = 0; i < nodes; i++){
-      for(let j = 0; j < nodes; j++){
-        if(j == i) continue;
+      for(let j = i+1; j < nodes; j++){
         if(Math.random() < density){
           neighbours[i].push(j);
           neighbours[j].push(i);
