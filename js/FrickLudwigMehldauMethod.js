@@ -46,6 +46,7 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
       node.lastImpulse = new Vector2D(0,0);
       node.temperature = this.temperatureInit;
       node.skewGauge = 0;
+      node.phi = 1 + node.neighbours.length/2;
     });
 
   }
@@ -83,8 +84,6 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
   }
 
   computeImpulse(node){
-    //degree function
-    let phi = 1 + node.neighbours.length/2;  //TODO: move to init
 
     //center of gravity //TODO: change to calc barycenter of the subgraph, not whole graph
     let center = new Vector2D(0, 0);
@@ -95,18 +94,23 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
 
     let impulse = new Vector2D(0,0);
     //attraction to center of gravity
-    impulse = impulse.add(center.subtract(node.cpos).scale(this.gravitationalConstant * phi));
+    impulse = impulse.add(center.subtract(node.cpos).scale(this.gravitationalConstant * node.phi));
 
     //random disturbance
-    let randomDisturbance = Vector2D.randomPosition(new Vector2D(-this.randomDisturbanceRange, -this.randomDisturbanceRange), new Vector2D(this.randomDisturbanceRange, this.randomDisturbanceRange), 0);
-    impulse = impulse.add(randomDisturbance);
+    if(this.randomDisturbanceRange != 0){
+      let randomDisturbance = Vector2D.randomPosition(new Vector2D(-this.randomDisturbanceRange, -this.randomDisturbanceRange), new Vector2D(this.randomDisturbanceRange, this.randomDisturbanceRange), 0);
+      impulse = impulse.add(randomDisturbance);
+    }
+
+    let desiredEdgeLength2 = Math.pow(this.desiredEdgeLength, 2);
 
     //internodes repulsive forces
     this.nodes.forEach((other, i) => {
       if (node == other) return;
-      let distance = node.cpos.subtract(other.cpos);
+      let direction = node.cpos.subtract(other.cpos);
+      let distance = direction.magnitude();
       let repulsiveForce = new Vector2D(0, 0);
-      if(distance.magnitude() != 0) repulsiveForce = distance.normalize().scale(Math.pow(this.desiredEdgeLength, 2) / Math.pow(distance.magnitude(), 2));
+      if(distance != 0) repulsiveForce = direction.normalize().scale(desiredEdgeLength2 / (distance * distance));
 
       if(repulsiveForce.magnitude() == Infinity){
         console.log("repulsive");
@@ -118,8 +122,9 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
 
     //edges attractive forces
     node.neighbours.forEach((neighbour, i) => {
-      let distance = node.cpos.subtract(neighbour.cpos);
-      let attractiveForce = distance.normalize().scale((-1 * Math.pow(distance.magnitude(), 2)) / (Math.pow(this.desiredEdgeLength, 2) * phi));
+      let direction = node.cpos.subtract(neighbour.cpos);
+      let distance = direction.magnitude();
+      let attractiveForce = direction.normalize().scale((-1 distance * distance) / (desiredEdgeLength2 * node.phi));
 
       if(attractiveForce.magnitude() == Infinity) {
         console.log("attractive");
@@ -128,21 +133,6 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
 
       impulse = impulse.add(attractiveForce);
     });
-
-    //repulsive forces with frame borders
-
-    /*let borderForce = new Vector2D(0, 0);
-    borderForce.x += Math.pow(this.desiredEdgeLength, 2) / Math.pow(node.position.x, 2);
-    borderForce.x -= Math.pow(this.desiredEdgeLength, 2) / Math.pow((this.frame.width - node.position.x), 2);
-    borderForce.y += Math.pow(this.desiredEdgeLength, 2) / Math.pow(node.position.y, 2);
-    borderForce.y -= Math.pow(this.desiredEdgeLength, 2) / Math.pow((this.frame.height - node.position.y), 2);
-
-    if(borderForce.magnitude() == Infinity){
-      console.log("border");
-      borderForce = new Vector2D(0, 0);
-    }
-
-    impulse = impulse.add(borderForce.scale(10));*/
 
     return impulse;
 
