@@ -62,9 +62,6 @@ class ForceDirectedGraph{
 		else if(simulationMethod == "FruchtermanAndReingold"){
 			this.simulation = new FruchtermanAndReingoldMethod(this.nodes, this.edges, this.frame, simulationParameters);
 		}
-		else if(simulationMethod == "KamadaAndKawai"){
-			console.log("KamadaAndKawai method is not supported yet");
-		}
 		else if(simulationMethod == "FrickLudwigMehldau"){
 			this.simulation = new FrickLudwigMehldauMethod(this.nodes, this.edges, this.frame, simulationParameters);
 		}

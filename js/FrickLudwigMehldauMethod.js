@@ -124,7 +124,7 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
     node.neighbours.forEach((neighbour, i) => {
       let direction = node.cpos.subtract(neighbour.cpos);
       let distance = direction.magnitude();
-      let attractiveForce = direction.normalize().scale((-1 distance * distance) / (desiredEdgeLength2 * node.phi));
+      let attractiveForce = direction.normalize().scale((-1 * distance * distance) / (desiredEdgeLength2 * node.phi));
 
       if(attractiveForce.magnitude() == Infinity) {
         console.log("attractive");

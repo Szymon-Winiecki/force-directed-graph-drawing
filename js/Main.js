@@ -28,6 +28,8 @@ function bindButtons(){
 				forceGraph.delete();
 				forceGraph = new ForceDirectedGraph({data:data, parentSelector:"#graph-container", simulationMethod:currentSimulationMethod});
 				forceGraph.start();
+
+				document.querySelector("#EadesMethodRadio").click();
 		});
 
 		reader.addEventListener('error', function() {
@@ -50,6 +52,7 @@ function bindButtons(){
 		forceGraph = new ForceDirectedGraph({data:data, parentSelector:"#graph-container", simulationMethod:currentSimulationMethod});
 		forceGraph.start();
 
+		document.querySelector("#EadesMethodRadio").click();
 	}
 
 	document.querySelector("#generateTree").onclick = () => {
@@ -59,6 +62,8 @@ function bindButtons(){
 		forceGraph.delete();
 		forceGraph = new ForceDirectedGraph({data:data, parentSelector:"#graph-container", simulationMethod:currentSimulationMethod});
 		forceGraph.start();
+
+		document.querySelector("#EadesMethodRadio").click();
 	}
 
 	document.querySelector('#downlaodGraphJson').onclick = () => {
@@ -95,21 +100,15 @@ function bindButtons(){
 	//simulation method
 
 	document.querySelector("#EadesMethodRadio").onchange = () => {
-		currentSimulationMethod = "Eades";
-		forceGraph.changeSimulationMethod(currentSimulationMethod);
-		loadEades();
+		changeSimulationMethod("Eades");
 	}
 
 	document.querySelector("#FARMethodRadio").onchange = () => {
-		currentSimulationMethod = "FruchtermanAndReingold";
-		forceGraph.changeSimulationMethod(currentSimulationMethod);
-		loadFruchtermanAndReingold();
+		changeSimulationMethod("FruchtermanAndReingold");
 	}
 
 	document.querySelector("#FLMMethodRadio").onchange = () => {
-		currentSimulationMethod = "FrickLudwigMehldau";
-		forceGraph.changeSimulationMethod(currentSimulationMethod);
-		loadFrickLudwigMehldau();
+		changeSimulationMethod("FrickLudwigMehldau");
 	}
 
 	//simulation options
@@ -130,6 +129,26 @@ function bindButtons(){
 		updateInputFields();
 	}
 }
+
+function changeSimulationMethod(method){
+	currentSimulationMethod = method;
+	forceGraph.changeSimulationMethod(method);
+
+	if(method == "Eades"){
+		loadEades();
+	}
+	else if(method == "FruchtermanAndReingold") {
+		loadFruchtermanAndReingold();
+	}
+	else if(method == "FrickLudwigMehldau") {
+		loadFrickLudwigMehldau();
+	}
+	else{
+		console.log("unknown simulation method: " + method);
+		changeSimulationMethod("Eades");
+	}
+}
+
 
 function loadMethodControls(controlsTemplateSelector){
 	let formTemplate = document.querySelector(controlsTemplateSelector);
@@ -169,11 +188,13 @@ function loadFruchtermanAndReingold(){
 	function updateInputFields(){
 		document.querySelector("#iterations").value = forceGraph.simulation.maxIterationsCount;
 		document.querySelector("#temperatureMultiplier").value = forceGraph.simulation.temperatureMultiplier;
+		document.querySelector("#edgeLength").value = forceGraph.simulation.edgeLength;
 	}
 
 	function updateSimulationVariables(){
 		forceGraph.simulation.maxIterationsCount = parseInt(document.querySelector("#iterations").value);
 		forceGraph.simulation.temperatureMultiplier = parseFloat(document.querySelector("#temperatureMultiplier").value);
+		forceGraph.simulation.edgeLength = parseFloat(document.querySelector("#edgeLength").value);
 	}
 
 	updateInputFields();
