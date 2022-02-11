@@ -17,10 +17,11 @@ class FruchtermanAndReingoldMethod extends SimulationMethod {
     super(nodes, edges, frame, parameters);
   }
 
-  updateParameters({forceMultiplier, forceThreshold, maxIterationsCount, temperatureMultiplier}){
-    super.updateParameters({forceMultiplier: forceMultiplier, forceThreshold: forceThreshold});
-    this.maxIterationsCount = maxIterationsCount ?? this.maxIterationsCount;
-    this.temperatureMultiplier = temperatureMultiplier ?? this.temperatureMultiplier;
+  updateParameters(parameters){
+    super.updateParameters({forceMultiplier: parameters?.forceMultiplier, forceThreshold: parameters?.forceThreshold});
+    this.maxIterationsCount = parameters?.maxIterationsCount ?? this.maxIterationsCount;
+    this.temperatureMultiplier = parameters?.temperatureMultiplier ?? this.temperatureMultiplier;
+    this.edgeLength = parameters?.edgeLength ?? this.edgeLength;
   }
 
   calculateForces(){

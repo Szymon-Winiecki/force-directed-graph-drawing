@@ -169,9 +169,12 @@ function loadEades(){
 	}
 
 	function updateSimulationVariables(){
-		forceGraph.simulation.edgeForceMultiplier = parseFloat(document.querySelector("#edgeForceMultiplier").value);
-		forceGraph.simulation.edgeLength = parseFloat(document.querySelector("#edgeLength").value);
-		forceGraph.simulation.internodesForceMultiplier = parseFloat(document.querySelector("#internodesForceMultiplier").value);
+		let parameters = {
+			edgeForceMultiplier : parseFloat(document.querySelector("#edgeForceMultiplier").value),
+			edgeLength : parseFloat(document.querySelector("#edgeLength").value),
+			internodesForceMultiplier : parseFloat(document.querySelector("#internodesForceMultiplier").value)
+		}
+		forceGraph.simulation.updateParameters(parameters);
 	}
 
 	updateInputFields();
@@ -192,9 +195,12 @@ function loadFruchtermanAndReingold(){
 	}
 
 	function updateSimulationVariables(){
-		forceGraph.simulation.maxIterationsCount = parseInt(document.querySelector("#iterations").value);
-		forceGraph.simulation.temperatureMultiplier = parseFloat(document.querySelector("#temperatureMultiplier").value);
-		forceGraph.simulation.edgeLength = parseFloat(document.querySelector("#edgeLength").value);
+		let parameters = {
+			maxIterationsCount : parseInt(document.querySelector("#iterations").value),
+			temperatureMultiplier : parseFloat(document.querySelector("#temperatureMultiplier").value),
+			edgeLength : parseFloat(document.querySelector("#edgeLength").value)
+		}
+		forceGraph.simulation.updateParameters(parameters);
 	}
 
 	updateInputFields();
