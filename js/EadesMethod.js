@@ -25,16 +25,20 @@ class EadesMethod extends SimulationMethod{
     this.nodes.forEach((nodeA, i) => {
       nodeA.force = new Vector2D(0, 0);
       this.nodes.forEach((nodeB, j) => {
-        let distance = Vector2D.distance(nodeA.position, nodeB.position);
+        let direction = nodeA.position.subtract(nodeB.position);
+        let distance = direction.magnitude();
         let force = this.internodesForceMultiplier/(distance*distance);
-        nodeA.force = nodeA.force.add(nodeA.position.subtract(nodeB.position).normalize().scale(force));
+        nodeA.force = nodeA.force.add(direction.normalize().scale(force));
       });
     });
 
 		this.edges.forEach((edge, i) => {
-			let distance = Vector2D.distance(edge[0].position, edge[1].position);
-			edge[1].force = edge[1].force.add(edge[0].position.subtract(edge[1].position).normalize().scale(Math.log(distance/this.edgeLength) * this.edgeForceMultiplier));
-			edge[0].force = edge[0].force.add(edge[1].position.subtract(edge[0].position).normalize().scale(Math.log(distance/this.edgeLength) * this.edgeForceMultiplier));
+      let direction = edge[0].position.subtract(edge[1].position);
+			let distance = direction.magnitude();
+      let normalizedDirection = direction.normalize();
+      let force = Math.log(distance/this.edgeLength) * this.edgeForceMultiplier;
+			edge[1].force = edge[1].force.add(normalizedDirection.scale(force));
+			edge[0].force = edge[0].force.add(normalizedDirection.scale(force * -1));
 		});
 	}
 }
