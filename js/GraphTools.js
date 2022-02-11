@@ -21,8 +21,6 @@ class GraphTools{
     for(let i = 0; i < graph.length; i++) {
       graph[i] = {
         id : i,
-  			name : "",
-  			value : 1,
   			neighbours : neighbours[i]
       }
     }
