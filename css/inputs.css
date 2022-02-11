@@ -204,3 +204,11 @@ input[type="radio"]:checked::after{
   opacity: 0.15;
   transition: .2s;
 }
+
+/*
+  file
+*/
+
+input[type=file]{
+  padding-right: 1px;
+}

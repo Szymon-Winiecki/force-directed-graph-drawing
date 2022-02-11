@@ -7,6 +7,7 @@ class ForceDirectedGraph{
 	parentSelector;
 
 	paused = false;
+	interactive = true;
 
 	frame = {
 		width : 900,
@@ -56,18 +57,7 @@ class ForceDirectedGraph{
 
 		this.frame.padding = this.style.nodeRadius*0.5 + 4;
 
-		if(simulationMethod == "Eades"){
-			this.simulation = new EadesMethod(this.nodes, this.edges, this.frame, simulationParameters);
-		}
-		else if(simulationMethod == "FruchtermanAndReingold"){
-			this.simulation = new FruchtermanAndReingoldMethod(this.nodes, this.edges, this.frame, simulationParameters);
-		}
-		else if(simulationMethod == "FrickLudwigMehldau"){
-			this.simulation = new FrickLudwigMehldauMethod(this.nodes, this.edges, this.frame, simulationParameters);
-		}
-		else{
-			console.log("unknown simulation method: " + simulationMethod);
-		}
+		this.changeSimulationMethod(simulationMethod);
 	}
 
 	start(){
@@ -112,7 +102,7 @@ class ForceDirectedGraph{
 		this.time.deltaTime = currentTime - this.time.lastFrameTime;
 		this.time.lastFrameTime = currentTime;
 
-		setTimeout(this.update.bind(this), d3.max([1, this.options.frametime - nzk])); //TODO: change to conditional upate AND protect from < 0 time
+		setTimeout(this.update.bind(this), d3.max([1, this.options.frametime - nzk]));
 	}
 
 	delete(){
@@ -157,7 +147,7 @@ class ForceDirectedGraph{
 			.attr("r", this.style.nodeRadius)
 			.attr("fill", this.style.nodeColor)
 			.call(d3.drag().on('drag', (e, d) => {
-				if(this.paused) return;
+				if(!this.interactive || this.paused) return;
 				d.position.x = e.x;
 				d.position.y = e.y;
 			}));
@@ -166,12 +156,15 @@ class ForceDirectedGraph{
 	changeSimulationMethod(method){
 		if(method == "Eades"){
 			this.simulation = new EadesMethod(this.nodes, this.edges, this.frame);
+			this.interactive = true;
 		}
 		else if(method == "FruchtermanAndReingold"){
 			this.simulation = new FruchtermanAndReingoldMethod(this.nodes, this.edges, this.frame);
+			this.interactive = false;
 		}
 		else if(method == "FrickLudwigMehldau"){
 			this.simulation = new FrickLudwigMehldauMethod(this.nodes, this.edges, this.frame);
+			this.interactive = false;
 		}
 		this.simulation.init();
 	}
