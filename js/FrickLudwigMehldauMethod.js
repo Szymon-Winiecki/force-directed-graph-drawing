@@ -4,7 +4,7 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
   temperatureMax = 10;
   temperatureInit = 6;
 
-  gravitationalConstant = 0; //0.0625
+  gravitationalConstant = 0;
 
   randomDisturbanceRange = 0;
 
