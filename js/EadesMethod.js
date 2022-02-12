@@ -22,6 +22,7 @@ class EadesMethod extends SimulationMethod{
 
 	calculateForces(){
 
+    //repulsive forces between each pair nodes
     this.nodes.forEach((nodeA, i) => {
       nodeA.force = new Vector2D(0, 0);
       this.nodes.forEach((nodeB, j) => {
@@ -32,6 +33,7 @@ class EadesMethod extends SimulationMethod{
       });
     });
 
+    //attractive forces between each pair of neighbours
 		this.edges.forEach((edge, i) => {
       let direction = edge[0].position.subtract(edge[1].position);
 			let distance = direction.magnitude();

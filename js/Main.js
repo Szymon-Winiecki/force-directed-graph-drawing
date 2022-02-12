@@ -216,7 +216,6 @@ function loadFrickLudwigMehldau(){
 
 	function updateInputFields(){
 		document.querySelector("#temperatureMax").value = forceGraph.simulation.temperatureMax;
-		document.querySelector("#temperatureMin").value = forceGraph.simulation.temperatureMin;
 		document.querySelector("#temperatureInit").value = forceGraph.simulation.temperatureInit;
 		document.querySelector("#gravitationalConstant").value = forceGraph.simulation.gravitationalConstant;
 		document.querySelector("#randomDisturbanceRange").value = forceGraph.simulation.randomDisturbanceRange;
@@ -230,7 +229,6 @@ function loadFrickLudwigMehldau(){
 	function updateSimulationVariables(){
 		let parameters = {
 			temperatureMax : parseFloat(document.querySelector("#temperatureMax").value),
-			temperatureMin : parseFloat(document.querySelector("#temperatureMin").value),
 			temperatureInit : parseFloat(document.querySelector("#temperatureInit").value),
 			gravitationalConstant : parseFloat(document.querySelector("#gravitationalConstant").value),
 			randomDisturbanceRange : parseFloat(document.querySelector("#randomDisturbanceRange").value),

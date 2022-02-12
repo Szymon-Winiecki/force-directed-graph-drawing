@@ -2,19 +2,18 @@
 class FrickLudwigMehldauMethod extends SimulationMethod {
 
   temperatureMax = 10;
-  temperatureMin = 3;
   temperatureInit = 6;
 
   gravitationalConstant = 0; //0.0625
 
   randomDisturbanceRange = 0;
 
-  desiredEdgeLength = 60;
+  desiredEdgeLength = 120;
 
-  minOscillataionDetection = 1.3;
-  minRotationDetection = 1.3;
-  sensitivityTowardsOscillation = 1;
-  sensitivityTowardsRotation = 0.5;
+  minOscillataionDetection = 1.8;
+  minRotationDetection = 0.8;
+  sensitivityTowardsOscillation = 0.4;
+  sensitivityTowardsRotation = 0.4;
 
   temperatureGlobal;
 
@@ -27,7 +26,6 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
   updateParameters(parameters){
     super.updateParameters({forceMultiplier: parameters?.forceMultiplier, forceThreshold: parameters?.forceThreshold});
     this.temperatureMax = parameters?.temperatureMax ?? this.temperatureMax;
-    this.temperatureMin = parameters?.temperatureMin ?? this.temperatureMin;
     this.temperatureInit = parameters?.temperatureInit ?? this.temperatureInit;
     this.gravitationalConstant = parameters?.gravitationalConstant ?? this.gravitationalConstant;
     this.randomDisturbanceRange = parameters?.randomDisturbanceRange ?? this.randomDisturbanceRange;
@@ -52,11 +50,6 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
   }
 
   calculateForces(){
-    console.log(this.temperatureGlobal);
-    if(this.temperatureGlobal < this.temperatureMin){
-      //return;
-    }
-
     this.temperatureGlobal = 0;
     let permutation = this.randomPermutation(this.nodes);
     permutation.forEach((choosen, i) => {
@@ -113,7 +106,6 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
       if(distance != 0) repulsiveForce = direction.normalize().scale(desiredEdgeLength2 / (distance * distance));
 
       if(repulsiveForce.magnitude() == Infinity){
-        console.log("repulsive");
         repulsiveForce = new Vector2D(0, 0);
       }
 
@@ -127,7 +119,6 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
       let attractiveForce = direction.normalize().scale((-1 * distance * distance) / (desiredEdgeLength2 * node.phi));
 
       if(attractiveForce.magnitude() == Infinity) {
-        console.log("attractive");
         attractiveForce = new Vector2D(0, 0);
       }
 
@@ -147,13 +138,16 @@ class FrickLudwigMehldauMethod extends SimulationMethod {
 
     if(impulse.magnitude() != 0 && node.lastImpulse.magnitude() != 0){
       let sinb = Math.sin(impulse.angle(node.lastImpulse));
-      if(sinb > Math.sin(Math.PI/2 + this.minRotationDetection/2)){
+      if(Math.abs(sinb) > Math.sin(Math.PI/2 + this.minRotationDetection/2)){
         node.skewGauge += this.sensitivityTowardsRotation * Math.sign(sinb);
+        node.skewGauge = Math.min(-1, Math.max(1, node.skewGauge));
       }
 
       let cosb = Math.cos(impulse.angle(node.lastImpulse));
       if(Math.abs(cosb) > Math.cos(this.minOscillataionDetection/2)){
-        node.temperature *= this.sensitivityTowardsOscillation * cosb;
+        if(cosb < 0){
+          node.temperature *= this.sensitivityTowardsOscillation * cosb;
+        }
       }
     }
 

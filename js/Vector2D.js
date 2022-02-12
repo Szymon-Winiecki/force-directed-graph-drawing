@@ -45,7 +45,7 @@ class Vector2D{
   }
 
   angle(other){
-    return Math.acos(this.dotProduct(other));
+    return Math.acos(this.dotProduct(other)/(this.magnitude()*other.magnitude()));
   }
 
   magnitude(){
