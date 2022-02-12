@@ -249,3 +249,17 @@ function loadFrickLudwigMehldau(){
 		forceGraph.simulation.iteration = 0;
 	}
 }
+
+function downloadGraphSvg(svgSelector){
+    let svg = document.querySelector(svgSelector);
+    let xml = new XMLSerializer().serializeToString(svg);
+    let svg64 = btoa(unescape(encodeURIComponent(xml)));
+    let b64start = 'data:image/svg+xml;base64,';
+    let image64 = b64start + svg64;
+
+		const a = document.createElement('a');
+		a.download = 'graph.svg';
+		a.href = image64;
+
+		a.click();
+}
