@@ -95,8 +95,7 @@ class ForceDirectedGraph{
 
 
 		//frametime managment
-		//console.log((this.time.lastFrameTime-this.time.startTime)/this.time.framesCount); //avg frametime
-		let nzk = d3.max([this.time.deltaTime - this.options.frametime, 0]); //TODO: change name
+		let nzk = d3.max([this.time.deltaTime - this.options.frametime, 0]);
 		this.time.framesCount++;
 		let currentTime = Date.now();
 		this.time.deltaTime = currentTime - this.time.lastFrameTime;
