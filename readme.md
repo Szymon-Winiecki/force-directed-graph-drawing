@@ -1,6 +1,8 @@
 # Rysowanie grafu oparte na odwzorowaniu sił fizycznych
 
-Autor : Szymon Winiecki 148149
+Projekt na przedmiot optymalizacja kombinatoryczna na Politechnice Poznańskiej
+
+Autor : Szymon Winiecki
 
 Algorytmy rysujące graf w oparciu o symulację fizyczną (ang. Force-directed graph drawing algorithms) to rodzina algorytmów mających za zadanie stworzyć przejrzystą i estetyczną wizualizację grafu. Krawędzie najczęściej odwzorowane są jako sprężyny, których napięcie zależy od odległości między wierzchołkami końcowymi, natomiast wierzchołki symulowane są jako odpychające się cząsteczki o jednakowym ładunku elektrycznym. Działanie algorytmów oparte jest na minimalizacji energii układu poprzez symulacje jego fizycznych właściwości.
 
@@ -13,6 +15,7 @@ Stworzone przeze mnie narzędzie implementuje trzy algorytmy rozmieszczające gr
 Program pozwala obserwować proces rozmieszczania wierzchołków na losowo wygenerowanych lub wcześniej przygotowanych grafach, wybranie algorytmu oraz zmianę parametrów używanych przy symulacji.
 
 Bibliografia:
+
   [1] P. Eades. A heuristic for graph drawing. Congressus Numerantium, 1984.
 
   [2] T. Fruchterman and E. Reingold. Graph drawing by force-directed placement. Softw. – Pract.Exp., 1991.
