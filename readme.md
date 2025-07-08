@@ -66,7 +66,7 @@ Stworzone przeze mnie narzędzie implementuje trzy algorytmy rozmieszczające gr
 2. algorytm zaproponowany przez Thomasa M. J. Fruchtermana i Edwarda M. Reingolda [2]
 3. algorytm zaproponowany przez Arne Frick, Andreas Ludwig i Heiko Mehldau [3]
 
-Program pozwala obserwować proces rozmieszczania wierzchołków na losowo wygenerowanych lub wcześniej przygotowanych grafach, wybranie algorytmu oraz zmianę parametrów używanych.
+Program pozwala obserwować proces rozmieszczania wierzchołków na losowo wygenerowanych lub wcześniej przygotowanych grafach, wybranie algorytmu oraz zmianę parametrów używanych w symulacji.
 
 ## Bibliografia:
 
